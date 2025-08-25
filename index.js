@@ -1,52 +1,63 @@
 const express = require('express');
 const app = express();
+const port = 3002;
 
-
-
-// Ruta de bienvenida
+// ruta principal con instrucciones tipo texto
 app.get('/', (req, res) => {
-  res.send('🧮 Bienvenida a la calculadora con Express');
-});
-let num1 = 6
-let num2 = 5
+  res.send(`
+    <pre>
+Bienvenida a la calculadora de Marce!!
 
-let saludo = 'Hola mundo'
+Ahora puedes ingresar los números directamente en la URL.
 
-app.get('/saludo', (req,res) => {
-    const resultado= saludo
-    res.send(`${resultado}`);
-});
+Opciones disponibles:
+  1 → Sumar
+  2 → Restar
+  3 → Multiplicar
+  4 → Dividir
 
-// Ruta para sumar
-app.get('/sumar', (req, res) => {
-  const resultado = num1 + num2
-  res.send(`Resultado de la suma de ${num1} mas ${num2} es igual a: ${resultado}`);
-});
 
-// Ruta para restar
-app.get('/restar', (req, res) => {
-  const resultado = num1 - num2
-  res.send(`Resultado de la resta de ${num1} menos ${num2} es igual a: ${resultado}`);
+    </pre>
+  `);
 });
 
-// Ruta para multiplicar
-app.get('/multiplicar', (req, res) => {
-  const resultado = num1 * num2
-  res.send(`Resultado de la multiplicación de ${num1} por ${num2} es igual a: ${resultado}`);
-});
+//ruta con opción y números como parámetros
+app.get('/:op/:num1/:num2', (req, res) => {
+  const { op, num1, num2 } = req.params;
+  const a = parseFloat(num1);
+  const b = parseFloat(num2);
+  let resultado;
 
-// Ruta para dividir
-app.get('/dividir', (req, res) => {
-  const resultado = num1 / num2
-  if (resultado === 0) {
-    res.send('❌ Error: no se puede dividir por cero');
-  } else {
-    const resultado = num1 / num2
-    res.send(`Resultado de la división de ${num1} dividio por ${num2} es igual a: ${resultado}`);
+  if (isNaN(a) || isNaN(b)) {
+    return res.send(`<h2> Por favor ingresa números válidos en la URL.</h2>`);
+  }
+
+  switch (op) {
+    case '1':
+      resultado = a + b;
+      res.send(`<h2> El resultado de: ${a} + ${b} = ${resultado}</h2>`);
+      break;
+    case '2':
+      resultado = a - b;
+      res.send(`<h2> El resultado de: ${a} - ${b} = ${resultado}</h2>`);
+      break;
+    case '3':
+      resultado = a * b;
+      res.send(`<h2> El resultado de: ${a} * ${b} = ${resultado}</h2>`);
+      break;
+    case '4':
+      if (b === 0) {
+        res.send(`<h2> No se puede dividir por cero.</h2>`);
+      } else {
+        resultado = a / b;
+        res.send(`<h2> El resultado de: ${a} / ${b} = ${resultado}</h2>`);
+      }
+      break;
+    default:
+      res.send(`<h2> Opción inválida. Regresa a <a href="/">/</a> para ver el menú.</h2>`);
   }
 });
 
-// Iniciar servidor
-app.listen(3001, () => {
-  console.log('✅ Calculadora Express corriendo en http://localhost:3001');
+app.listen(port, () => {
+  console.log(` Servidor activo en http://localhost:${port}`);
 });
